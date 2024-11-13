@@ -1,75 +1,79 @@
+// index.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js";
-import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDoc, getDocs, doc, updateDoc, deleteDoc, query, where } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDcpggR7jf2BEPNLqRj1Iz368F0dDtD1-4",
-    authDomain: "planilha-8938f.firebaseapp.com",
-    projectId: "planilha-8938f",
-    storageBucket: "planilha-8938f.firebasestorage.app",
-    messagingSenderId: "211015132743",
-    appId: "1:211015132743:web:45f443dc9e65b72fe37362"
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
 };
 
+// Inicializando Firebase e Firestore
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
+const fretesCol = collection(db, "fretes");
 
-// Espera o DOM carregar completamente
-document.addEventListener('DOMContentLoaded', () => {
-    const inputPesquisar = document.getElementById("pesquisar");
-    const btnPesquisar = document.getElementById("btnPesquisar");
-
-    // Função para buscar documentos pelo campo cidade_destino
-    async function getFretesByCidadeDestino(cidade) {
-        try {
-            if (!cidade) {
-                console.log("Por favor, insira uma cidade para pesquisar");
-                return [];
-            }
-
-            const fretesCol = collection(db, "fretes");
-            const fretesQuery = query(fretesCol, where("cidade_destino", "==", cidade));
-            const querySnapshot = await getDocs(fretesQuery);
-            
-            const fretesList = querySnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-
-            return fretesList;
-        } catch (error) {
-            console.error("Erro ao buscar fretes por cidade_destino:", error);
-            return [];
-        }
+// Função CREATE - adiciona um novo frete
+export async function createFrete(data) {
+    try {
+        const docRef = await addDoc(fretesCol, data);
+        console.log("Frete criado com ID:", docRef.id);
+        return docRef.id;
+    } catch (error) {
+        console.error("Erro ao criar frete:", error);
+        return null;
     }
+}
 
-    // Função que será chamada quando clicar no botão de pesquisa
-    async function realizarPesquisa() {
-        const termoPesquisa = inputPesquisar.value.trim();
-        
-        if (termoPesquisa) {
-            try {
-                const fretes = await getFretesByCidadeDestino(termoPesquisa);
-                if (fretes.length > 0) {
-                    console.log("Fretes encontrados:", fretes);
-                    // Aqui você pode adicionar código para mostrar os resultados na página
-                } else {
-                    console.log("Nenhum frete encontrado para a cidade:", termoPesquisa);
-                }
-            } catch (error) {
-                console.error("Erro na pesquisa:", error);
-            }
-        } else {
-            console.log("Por favor, insira um termo de pesquisa");
-        }
+// Função READ - busca fretes por cidade_destino
+export async function getFretesByCidadeDestino(cidade) {
+    try {
+        const fretesQuery = query(fretesCol, where("cidade_destino", "==", cidade));
+        const querySnapshot = await getDocs(fretesQuery);
+        return querySnapshot.docs.map(doc => doc.data());
+    } catch (error) {
+        console.error("Erro ao buscar fretes por cidade_destino:", error);
+        return [];
     }
+}
 
-    // Adiciona evento de clique ao botão
-    btnPesquisar.addEventListener('click', realizarPesquisa);
+// Função READ - busca frete por ID
+export async function getFreteById(id) {
+    try {
+        const freteDocRef = doc(fretesCol, id);
+        const freteDoc = await getDoc(freteDocRef);
+        return freteDoc.exists() ? freteDoc.data() : null;
+    } catch (error) {
+        console.error("Erro ao buscar frete por ID:", error);
+        return null;
+    }
+}
 
-    // Opcional: Adiciona evento de pressionar Enter no input
-    inputPesquisar.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            realizarPesquisa();
-        }
-    });
-});
+// Função UPDATE - atualiza um frete pelo ID
+export async function updateFrete(id, data) {
+    try {
+        const freteDocRef = doc(fretesCol, id);
+        await updateDoc(freteDocRef, data);
+        console.log("Frete atualizado com sucesso");
+        return true;
+    } catch (error) {
+        console.error("Erro ao atualizar frete:", error);
+        return false;
+    }
+}
+
+// Função DELETE - deleta um frete pelo ID
+export async function deleteFrete(id) {
+    try {
+        const freteDocRef = doc(fretesCol, id);
+        await deleteDoc(freteDocRef);
+        console.log("Frete deletado com sucesso");
+        return true;
+    } catch (error) {
+        console.error("Erro ao deletar frete:", error);
+        return false;
+    }
+}
