@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="form_add_frete.css">
+    <link rel="stylesheet" href="css/form_add_frete.css">
     <title>Adicionar Frete</title>
 </head>
 <body>
@@ -11,7 +11,7 @@
         <h1>Adicionar Fretes</h1>
     </header>
     <main>
-        <form action="add_fretes">
+        <form id="freteForm">
             <label for="cliente">Cliente:</label>
             <input type="text" name="cliente" id="cliente" required>
             
@@ -57,10 +57,11 @@
             <label for="data">Data Inicio:</label>
             <input type="date" name="data" id="data" required>
             
-            <button type="submit" id="adicionar_fretes">Adicionar</button>
+            <button type="button" id="adicionar_fretes">Adicionar</button>
         </form>
     </main>
 
+    <script type="module" src="js/form_add_fretes.js"></script>
 
 </body>
 </html>

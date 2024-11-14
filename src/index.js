@@ -2,13 +2,14 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js";
 import { getFirestore, collection, addDoc, getDoc, getDocs, doc, updateDoc, deleteDoc, query, where } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-firestore.js";
 
+
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyDcpggR7jf2BEPNLqRj1Iz368F0dDtD1-4",
+    authDomain: "planilha-8938f.firebaseapp.com",
+    projectId: "planilha-8938f",
+    storageBucket: "planilha-8938f.firebasestorage.app",
+    messagingSenderId: "211015132743",
+    appId: "1:211015132743:web:45f443dc9e65b72fe37362"
 };
 
 // Inicializando Firebase e Firestore
@@ -77,3 +78,9 @@ export async function deleteFrete(id) {
         return false;
     }
 }
+
+
+export { db };
+export default firebaseApp;
+export { fretesCol };
+export { getFirestore, collection, addDoc, getDoc, getDocs, doc, updateDoc, deleteDoc, query, where };
