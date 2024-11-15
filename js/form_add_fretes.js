@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (id) {
             alert('Frete criado com sucesso!');
             // Opcional: limpar o formulário ou redirecionar
-            window.location.href = '/mostrador.html';
+            window.location.href = '../public/mostrador.html';
         } else {
             alert('Erro ao criar frete. Tente novamente.');
         }

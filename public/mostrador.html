@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/mostrador.css">
+    <title>Mostrador de Fretes</title>
+</head>
+<body>
+    <header>
+        <h1>Mostrador de Fretes</h1>
+    </header>
+    <form>
+        <label for="pesquisar">Pesquisar:</label>
+        <input id="pesquisar" type="text">
+        <button type="button" id="searchButton">Pesquisar</button>
+        <button type="button" id="advancedSearchButton">Busca Avançada</button>
+        <a href="../for_add_fretes.html"><button type="button" id="addFreteButton">Adicionar Frete</button></a>
+    </form>
+    
+    <section id="fretes-list">
+        <!-- Lista de fretes será gerada dinamicamente aqui -->
+    </section>
+
+    <script type="module" src="../js/mostrador.js" ></script>
+</body>
+</html>

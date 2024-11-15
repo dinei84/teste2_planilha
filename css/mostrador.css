@@ -1,110 +1,261 @@
+/* Reset and base styles */
 * {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
-    font-family: Arial, sans-serif;
 }
 
 body {
-    margin: 0;
-    padding: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
     background-color: #f5f5f5;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Header styles */
+header {
+    background-color: white;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: 1rem;
 }
 
 header h1 {
-    margin: 20px 0;
-    font-size: 24px;
+    font-size: 1.25rem;
+    font-weight: 500;
     color: #333;
+}
+
+/* Search form styles */
+.search-container {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    margin: 1rem 2rem;
 }
 
 form {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    gap: 1rem;
     justify-content: space-between;
-    max-width: 1200px;
-    width: 100%;
-    margin: 20px;
+    margin: 1rem 2rem;
 }
 
-form label {
-    display: block;
-    margin-bottom: 5px;
-    font-size: 14px;
+input, select, button {
+    padding: 0.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+input:focus, select:focus {
+    border-color: #2196F3;
+}
+
+button {
+    background-color: #2196F3;
+    color: white;
+    cursor: pointer;
+    border: none;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+/* Freight list styles */
+#fretes-list {
+    margin: 1rem 2rem;
+}
+
+/* Freight item with multiple columns */
+.frete-item {
+    background-color: white;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.5rem;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Individual information blocks */
+.frete-info p {
+    margin: 0.25rem 0;
+    font-size: 0.875rem;
+}
+
+.frete-info strong {
     color: #666;
 }
 
-form input[type="text"],
-form select {
-    padding: 10px;
-    border: 1px solid #ccc;
+/* Status style */
+.status-ativo {
+    background-color: #4CAF50;
+    color: white;
+    padding: 0.25rem 0.5rem;
     border-radius: 4px;
-    font-size: 16px;
-    width: 100%;
-    max-width: 250px;
-    margin-right: 10px;
+    font-size: 0.75rem;
+    display: inline-block;
 }
 
-form button,
-form .btn_adicionar,
-form .btn_busca_avancada {
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 20px;
+/* Button styles */
+.frete-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.button {
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    border: none;
+    font-size: 0.75rem;
+    font-weight: 500;
     cursor: pointer;
-    margin: 5px;
-}
-
-form button[type="submit"] {
-    background-color: #f5f5f5;
-    border: 1px solid #d3d3d3;
-    color: #333;
-}
-
-form .btn_adicionar {
-    background-color: transparent;
-    border: 1px solid #800080;
-    color: #800080;
-    text-decoration: none;
-    text-align: center;
-}
-
-form .btn_busca_avancada {
-    background-color: transparent;
-    border: 1px solid #800080;
-    color: #800080;
-    text-decoration: none;
-    text-align: center;
-}
-
-form .btn_adicionar:hover,
-form .btn_busca_avancada:hover {
-    background-color: #800080;
+    transition: background-color 0.2s;
+    text-transform: uppercase;
     color: white;
 }
 
+.update-btn {
+    background-color: #4CAF50;
+}
+
+.delete-btn {
+    background-color: #f44336;
+}
+
+.add-load-btn {
+    background-color: #2196F3;
+}
+
+/* Table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    margin-top: 1rem;
+}
+
+th, td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.875rem;
+}
+
+th {
+    font-weight: 500;
+    color: #666;
+    background-color: #fafafa;
+}
+
+/* Utility classes */
+.text-small {
+    font-size: 0.875rem;
+}
+
+.text-muted {
+    color: #666;
+}
+
+.frete-item {
+    background-color: white;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    padding: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Agrupamento das informações em 5 colunas */
+.frete-info {
+    display: grid;
+    grid-column: span 5;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+}
+
+/* Estilos para cada grupo de informações */
+.frete-info-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.frete-info-group p {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.frete-info-group strong {
+    color: #666;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Ações ficam na última linha ocupando toda a largura */
+.frete-actions {
+    grid-column: span 5;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+    margin-top: 0.5rem;
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+    .frete-info {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .frete-info-group {
+        margin-bottom: 1rem;
+    }
+}
+
 @media (max-width: 768px) {
+    .frete-info {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .frete-info {
+        grid-template-columns: 1fr;
+    }
+    
+    .frete-actions {
+        flex-direction: column;
+    }
+    
+    .button {
+        width: 100%;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .frete-item {
+        grid-template-columns: 1fr;
+    }
+    
     form {
         flex-direction: column;
-        align-items: flex-start;
     }
-
-    form input[type="text"],
-    form select {
-        margin-right: 0;
-        margin-bottom: 10px;
-        max-width: 100%;
-    }
-
-    form button,
-    form .btn_adicionar,
-    form .btn_busca_avancada {
-        width: 100%;
-        text-align: center;
+    
+    #fretes-list {
+        margin: 1rem;
     }
 }

@@ -3,7 +3,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.2/firebase
 import { getFirestore, collection, addDoc, getDoc, getDocs, doc, updateDoc, deleteDoc, query, where } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-firestore.js";
 
 
-const firebaseConfig = {
+export const firebaseConfig = {
     apiKey: "AIzaSyDcpggR7jf2BEPNLqRj1Iz368F0dDtD1-4",
     authDomain: "planilha-8938f.firebaseapp.com",
     projectId: "planilha-8938f",
