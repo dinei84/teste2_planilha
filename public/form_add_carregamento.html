@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/form_add_carregamento.css">
+    <title>Adicionar Frete</title>
+</head>
+<body>
+    <header>
+        <h1>Adicionar Fretes</h1>
+    </header>
+    <main>
+        <form id="freteForm">
+            <label for="data">Data da OC:</label>
+            <input type="text" name="data" id="data" required>
+            
+            <label for="placa">Placa:</label>
+            <input type="placa" name="placa" id="placa">
+           
+            <label for="motorista">Motorista:</label>
+            <input type="text" name="motorista" id="motorista">
+            
+            <label for="veiculo">Tipo de Veículo:</label>
+            <input type="text" name="veiculo" id="veiculo">
+            
+            <label for="peso">Peso:</label>
+            <input type="number" name="peso" id="peso" required>
+           
+            <label for="frete_motorista">Frete Motorista:</label>
+            <input type="number" name="frete_motorista" id="frete_motorista" required>
+            
+            <label for="emissor">Emissor:</label>
+            <input type="text" name="emissor" id="emissor">
+            
+            <label for="data_manifesto">Data Manifesto:</label>
+            <input type="date" name="data_manifesto" id="data_manifesto">
+            
+            <label for="cte">CTE:</label>
+            <input type="text" name="cte" id="cte">
+            
+            <label for="data_entrega">Data Entrega:</label>
+            <input type="date" name="data_entrega" id="data_entrega">
+            
+            <label for="nfe">NFe:</label>
+            <input type="text" name="nfe" id="nfe">
+            
+            <label for="obs">Observação:</label>
+            <input type="text" name="obs" id="obs">
+           
+                       
+            <button type="button" id="adicionar_fretes">Adicionar</button>
+
+            <a href="mostrador.html"><button type="button">Voltar</button></a>
+        </form>
+    </main>
+
+    <!-- <script type="module" src="js/form_add_fretes.js"></script> -->
+
+</body>
+</html>

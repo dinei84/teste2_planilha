@@ -172,7 +172,7 @@ async function deleteFrete(id) {
 
 function addLoad(id) {
     try {
-        const url = new URL('form_add_fretes.html', window.location.href);
+        const url = new URL('form_add_carregamento.html', window.location.href);
         url.searchParams.set('freteId', id);
         window.location.href = url.toString();
     } catch (error) {
