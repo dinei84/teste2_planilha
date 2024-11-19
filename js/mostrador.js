@@ -1,4 +1,4 @@
-// Importe o Firebase usando módulos npm ou use a CDN mais recente
+// mostrador.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 import { firebaseConfig } from "../src/index.js"; // Certifique-se de que o caminho esteja correto
@@ -35,6 +35,11 @@ async function renderFretes() {
 }
 
 function createFreteElement(frete) {
+    // Criar o link ao redor de toda a div
+    const freteLink = document.createElement("a");
+    freteLink.href = `detalhes_frete.html?freteId=${frete.id}`; // Ajuste o caminho do arquivo HTML conforme necessário
+    freteLink.className = "frete-link"; // Classe para estilizar o link, se necessário
+
     const freteItem = document.createElement("div");
     freteItem.className = "frete-item";
 
@@ -118,17 +123,26 @@ function createFreteElement(frete) {
     const updateButton = document.createElement("button");
     updateButton.className = "button update-btn";
     updateButton.textContent = "Atualizar";
-    updateButton.onclick = () => updateFrete(frete.id);
+    updateButton.onclick = (e) => {
+        e.preventDefault(); // Impedir que o clique no botão siga o link
+        updateFrete(frete.id);
+    };
 
     const deleteButton = document.createElement("button");
     deleteButton.className = "button delete-btn";
     deleteButton.textContent = "Excluir";
-    deleteButton.onclick = () => deleteFrete(frete.id);
+    deleteButton.onclick = (e) => {
+        e.preventDefault();
+        deleteFrete(frete.id);
+    };
 
     const addLoadButton = document.createElement("button");
     addLoadButton.className = "button add-load-btn";
     addLoadButton.textContent = "Adicionar Carregamento";
-    addLoadButton.onclick = () => addLoad(frete.id);
+    addLoadButton.onclick = (e) => {
+        e.preventDefault();
+        addLoad(frete.id);
+    };
 
     freteActions.appendChild(updateButton);
     freteActions.appendChild(deleteButton);
@@ -137,8 +151,12 @@ function createFreteElement(frete) {
     freteItem.appendChild(freteInfo);
     freteItem.appendChild(freteActions);
 
-    return freteItem;
+    // Adicionar o item ao link
+    freteLink.appendChild(freteItem);
+
+    return freteLink;
 }
+
 
 
 async function updateFrete(id) {

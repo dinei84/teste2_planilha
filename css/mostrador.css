@@ -214,6 +214,17 @@ th {
     margin-top: 0.5rem;
 }
 
+.frete-link {
+    text-decoration: none;
+    color: inherit;
+    display: block; /* Para o link envolver toda a div */
+}
+
+.frete-link:hover .frete-item {
+    background-color: #f0f0f0; /* Efeito visual ao passar o mouse */
+}
+
+
 /* Responsividade */
 @media (max-width: 1200px) {
     .frete-info {

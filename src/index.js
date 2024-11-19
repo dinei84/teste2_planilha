@@ -17,10 +17,10 @@ const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 const fretesCol = collection(db, "fretes");
 
-// Função CREATE - adiciona um novo frete
-export async function createFrete(data) {
+// Criar um novo frete
+export async function createFrete(freteData) {
     try {
-        const docRef = await addDoc(fretesCol, data);
+        const docRef = await addDoc(collection(db, "fretes"), freteData);
         console.log("Frete criado com ID:", docRef.id);
         return docRef.id;
     } catch (error) {
@@ -29,55 +29,96 @@ export async function createFrete(data) {
     }
 }
 
-// Função READ - busca fretes por cidade_destino
-export async function getFretesByCidadeDestino(cidade) {
+// Listar todos os fretes
+export async function getFretes() {
     try {
-        const fretesQuery = query(fretesCol, where("cidade_destino", "==", cidade));
-        const querySnapshot = await getDocs(fretesQuery);
-        return querySnapshot.docs.map(doc => doc.data());
+        const querySnapshot = await getDocs(collection(db, "fretes"));
+        const fretes = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        return fretes;
     } catch (error) {
-        console.error("Erro ao buscar fretes por cidade_destino:", error);
+        console.error("Erro ao listar fretes:", error);
         return [];
     }
 }
 
-// Função READ - busca frete por ID
-export async function getFreteById(id) {
+// Atualizar um frete
+export async function updateFrete(freteId, updatedData) {
     try {
-        const freteDocRef = doc(fretesCol, id);
-        const freteDoc = await getDoc(freteDocRef);
-        return freteDoc.exists() ? freteDoc.data() : null;
+        const freteRef = doc(db, "fretes", freteId);
+        await updateDoc(freteRef, updatedData);
+        console.log("Frete atualizado com sucesso!");
     } catch (error) {
-        console.error("Erro ao buscar frete por ID:", error);
+        console.error("Erro ao atualizar frete:", error);
+    }
+}
+
+// Excluir um frete
+export async function deleteFrete(freteId) {
+    try {
+        const freteRef = doc(db, "fretes", freteId);
+        await deleteDoc(freteRef);
+        console.log("Frete excluído com sucesso!");
+    } catch (error) {
+        console.error("Erro ao excluir frete:", error);
+    }
+}
+
+// ------------------------------- CRUD de CARREGAMENTOS ----------------------------------
+
+// Adicionar um novo carregamento a um frete específico
+export async function addCarregamento(freteId, carregamentoData) {
+    try {
+        const carregamentosCol = collection(doc(db, "fretes", freteId), "carregamentos");
+        const docRef = await addDoc(carregamentosCol, carregamentoData);
+        console.log("Carregamento adicionado com ID:", docRef.id);
+        return docRef.id;
+    } catch (error) {
+        console.error("Erro ao adicionar carregamento:", error);
         return null;
     }
 }
 
-// Função UPDATE - atualiza um frete pelo ID
-export async function updateFrete(id, data) {
+// Listar todos os carregamentos de um frete específico
+export async function getCarregamentos(freteId) {
     try {
-        const freteDocRef = doc(fretesCol, id);
-        await updateDoc(freteDocRef, data);
-        console.log("Frete atualizado com sucesso");
-        return true;
+        const carregamentosCol = collection(doc(db, "fretes", freteId), "carregamentos");
+        const querySnapshot = await getDocs(carregamentosCol);
+        const carregamentos = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        return carregamentos;
     } catch (error) {
-        console.error("Erro ao atualizar frete:", error);
-        return false;
+        console.error("Erro ao listar carregamentos:", error);
+        return [];
     }
 }
 
-// Função DELETE - deleta um frete pelo ID
-export async function deleteFrete(id) {
+// Atualizar um carregamento específico
+export async function updateCarregamento(freteId, carregamentoId, updatedData) {
     try {
-        const freteDocRef = doc(fretesCol, id);
-        await deleteDoc(freteDocRef);
-        console.log("Frete deletado com sucesso");
-        return true;
+        const carregamentoRef = doc(db, "fretes", freteId, "carregamentos", carregamentoId);
+        await updateDoc(carregamentoRef, updatedData);
+        console.log("Carregamento atualizado com sucesso!");
     } catch (error) {
-        console.error("Erro ao deletar frete:", error);
-        return false;
+        console.error("Erro ao atualizar carregamento:", error);
     }
 }
+
+// Excluir um carregamento específico
+export async function deleteCarregamento(freteId, carregamentoId) {
+    try {
+        const carregamentoRef = doc(db, "fretes", freteId, "carregamentos", carregamentoId);
+        await deleteDoc(carregamentoRef);
+        console.log("Carregamento excluído com sucesso!");
+    } catch (error) {
+        console.error("Erro ao excluir carregamento:", error);
+    }
+}
+
 
 
 export { db };
