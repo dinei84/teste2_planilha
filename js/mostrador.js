@@ -37,7 +37,7 @@ async function renderFretes() {
 function createFreteElement(frete) {
     // Criar o link ao redor de toda a div
     const freteLink = document.createElement("a");
-    freteLink.href = `detalhes_frete.html?freteId=${frete.id}`; // Ajuste o caminho do arquivo HTML conforme necessário
+    freteLink.href = `../public/detalhes_frete.html?freteId=${frete.id}`; // Ajuste o caminho do arquivo HTML conforme necessário
     freteLink.className = "frete-link"; // Classe para estilizar o link, se necessário
 
     const freteItem = document.createElement("div");

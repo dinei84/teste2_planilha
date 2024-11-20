@@ -1,91 +1,132 @@
-// detalhes_frete.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-import { firebaseConfig } from "../src/index.js";
+import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 
-// Inicialize o Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyDcpggR7jf2BEPNLqRj1Iz368F0dDtD1-4",
+    authDomain: "planilha-8938f.firebaseapp.com",
+    projectId: "planilha-8938f",
+    storageBucket: "planilha-8938f.firebasestorage.app",
+    messagingSenderId: "211015132743",
+    appId: "1:211015132743:web:45f443dc9e65b72fe37362" 
+};
+
+
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Função para obter o ID do frete da URL
-function getFreteIdFromUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('id');
-}
-
-// Função para carregar os detalhes do frete
-async function loadFreteDetails() {
-    const freteId = getFreteIdFromUrl();
-    if (!freteId) {
-        console.error("ID do frete não encontrado na URL");
-        document.getElementById("frete-details").innerHTML = "Frete não encontrado";
-        return;
-    }
-
+async function fetchFreteDetails(freteId) {
     try {
-        // Buscar dados do frete
         const freteDoc = await getDoc(doc(db, "fretes", freteId));
-        
         if (!freteDoc.exists()) {
-            document.getElementById("frete-details").innerHTML = "Frete não encontrado";
-            return;
+            throw new Error("Frete não encontrado.");
         }
-
-        const freteData = freteDoc.data();
-        displayFreteDetails(freteData);
-
-        // Buscar carregamentos relacionados
-        const carregamentosSnapshot = await getDocs(collection(db, "fretes", freteId, "carregamentos"));
-        const carregamentos = carregamentosSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-        
-        displayCarregamentos(carregamentos);
-
+        return freteDoc.data();
     } catch (error) {
-        console.error("Erro ao carregar detalhes do frete:", error);
-        document.getElementById("frete-details").innerHTML = `Erro ao carregar detalhes: ${error.message}`;
+        console.error("Erro ao buscar detalhes do frete:", error);
+        return null;
     }
 }
 
-// Função para exibir os detalhes do frete
-function displayFreteDetails(frete) {
-    const detailsContainer = document.getElementById("frete-details");
-    detailsContainer.innerHTML = `
-        <div class="frete-info">
-            <h2>Detalhes do Frete</h2>
-            <p><strong>Cliente:</strong> ${frete.cliente || 'N/A'}</p>
-            <p><strong>Origem:</strong> ${frete.origem || 'N/A'}</p>
-            <p><strong>Destino:</strong> ${frete.destino || 'N/A'}</p>
-            <p><strong>Valor:</strong> R$ ${frete.valor?.toFixed(2) || '0.00'}</p>
-            <p><strong>Status:</strong> ${frete.status || 'N/A'}</p>
-            <p><strong>Data:</strong> ${frete.data ? new Date(frete.data).toLocaleDateString() : 'N/A'}</p>
-        </div>
-    `;
+async function fetchCarregamentos(freteId) {
+    try {
+        const carregamentosSnap = await getDocs(collection(db, `fretes/${freteId}/carregamentos`));
+        const carregamentos = [];
+        carregamentosSnap.forEach((doc) => {
+            carregamentos.push(doc.data());
+        });
+        return carregamentos;
+    } catch (error) {
+        console.error("Erro ao buscar carregamentos:", error);
+        return [];
+    }
 }
 
-// Função para exibir os carregamentos
-function displayCarregamentos(carregamentos) {
+function renderFreteDetails(frete) {
+    const detalhesContainer = document.getElementById("frete-details");
+    detalhesContainer.innerHTML = "<h1>Detalhes do Frete</h1>";
+
+    const freteFields = [
+        { label: "Cliente", value: frete.cliente },
+        { label: "Cliente Destino", value: frete.cliente_destino },
+        { label: "Recebedor", value: frete.recebedor },
+        { label: "Localização", value: frete.localizacao },
+        { label: "Origem", value: frete.origem },
+        { label: "Destino", value: frete.destino },
+        { label: "Produto", value: frete.produto },
+        { label: "Embalagem", value: frete.embalagem },
+        { label: "Lote", value: frete.lote },
+        { label: "Pedido", value: frete.pedido },
+        { label: "Liberado", value: frete.liberado },
+        { label: "Operação", value: frete.operacao },
+        { label: "Data Início", value: frete.data },
+        { label: "Valor Empresa", value: `R$ ${parseFloat(frete.valor_empresa || 0).toFixed(2)}` },
+        { label: "Valor Motorista", value: `R$ ${parseFloat(frete.valor_motorista || 0).toFixed(2)}` },
+    ];
+
+    freteFields.forEach((field) => {
+        if (field.value) {
+            detalhesContainer.innerHTML += `
+                <p><strong>${field.label}:</strong> ${field.value}</p>
+            `;
+        }
+    });
+}
+
+function renderCarregamentos(carregamentos) {
     const carregamentosContainer = document.getElementById("carregamentos-list");
-    if (!carregamentosContainer) return;
+    carregamentosContainer.innerHTML = "<h2>Carregamentos</h2>";
 
     if (carregamentos.length === 0) {
-        carregamentosContainer.innerHTML = "<p>Nenhum carregamento encontrado</p>";
+        carregamentosContainer.innerHTML += `
+            <p>Não existem carregamentos para esse frete.</p>
+        `;
         return;
     }
 
-    const carregamentosHTML = carregamentos.map(carregamento => `
-        <div class="carregamento-item">
-            <h3>Carregamento ${carregamento.id}</h3>
-            <p><strong>Produto:</strong> ${carregamento.produto || 'N/A'}</p>
-            <p><strong>Quantidade:</strong> ${carregamento.quantidade || 'N/A'}</p>
-            <p><strong>Local de Coleta:</strong> ${carregamento.localColeta || 'N/A'}</p>
-        </div>
-    `).join('');
+    carregamentos.forEach((carregamento, index) => {
+        const carregamentoDiv = document.createElement("div");
+        carregamentoDiv.className = "carregamento-item";
 
-    carregamentosContainer.innerHTML = carregamentosHTML;
+        carregamentoDiv.innerHTML = `
+            <p><strong>Carregamento ${index + 1}</strong></p>
+            <p><strong>Data da OC:</strong> ${carregamento.data || "Não informado"}</p>
+            <p><strong>Placa:</strong> ${carregamento.placa || "Não informado"}</p>
+            <p><strong>Motorista:</strong> ${carregamento.motorista || "Não informado"}</p>
+            <p><strong>Tipo de Veículo:</strong> ${carregamento.veiculo || "Não informado"}</p>
+            <p><strong>Peso:</strong> ${carregamento.peso || "0"} kg</p>
+            <p><strong>Frete Motorista:</strong> R$ ${parseFloat(carregamento.frete_motorista || 0).toFixed(2)}</p>
+            <p><strong>Emissor:</strong> ${carregamento.emissor || "Não informado"}</p>
+            <p><strong>Data Manifesto:</strong> ${carregamento.data_manifesto || "Não informado"}</p>
+            <p><strong>CTE:</strong> ${carregamento.cte || "Não informado"}</p>
+            <p><strong>Data Entrega:</strong> ${carregamento.data_entrega || "Não informado"}</p>
+            <p><strong>NFe:</strong> ${carregamento.nfe || "Não informado"}</p>
+            <p><strong>Observação:</strong> ${carregamento.obs || "Nenhuma"}</p>
+        `;
+
+        carregamentosContainer.appendChild(carregamentoDiv);
+    });
 }
 
-// Carregar detalhes quando a página for carregada
-document.addEventListener('DOMContentLoaded', loadFreteDetails);
+async function loadDetails() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const freteId = urlParams.get("id");
+
+    if (!freteId) {
+        alert("ID do frete não fornecido!");
+        return;
+    }
+
+    const frete = await fetchFreteDetails(freteId);
+    if (frete) {
+        renderFreteDetails(frete);
+    } else {
+        alert("Erro ao carregar detalhes do frete.");
+        return;
+    }
+
+    const carregamentos = await fetchCarregamentos(freteId);
+    renderCarregamentos(carregamentos);
+}
+
+document.addEventListener("DOMContentLoaded", loadDetails);
