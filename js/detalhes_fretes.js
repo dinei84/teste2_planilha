@@ -10,31 +10,60 @@ const firebaseConfig = {
     appId: "1:211015132743:web:45f443dc9e65b72fe37362" 
 };
 
-
-
+// Inicializa Firebase e Firestore
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 async function fetchFreteDetails(freteId) {
+    console.log('Tentando buscar frete com ID:', freteId);
+    
     try {
-        const freteDoc = await getDoc(doc(db, "fretes", freteId));
-        if (!freteDoc.exists()) {
-            throw new Error("Frete não encontrado.");
+        // Verifica se o ID é válido
+        if (!freteId || typeof freteId !== 'string' || freteId.trim() === '') {
+            throw new Error("ID do frete inválido ou não fornecido");
         }
-        return freteDoc.data();
+
+        const freteRef = doc(db, "fretes", freteId);
+        console.log('Referência do documento:', freteRef);
+        
+        const freteDoc = await getDoc(freteRef);
+        console.log('Documento existe?', freteDoc.exists());
+        
+        if (!freteDoc.exists()) {
+            throw new Error(`Frete com ID ${freteId} não encontrado.`);
+        }
+        
+        const freteData = freteDoc.data();
+        console.log('Dados do frete recuperados:', freteData);
+        return freteData;
     } catch (error) {
-        console.error("Erro ao buscar detalhes do frete:", error);
-        return null;
+        console.error("Erro detalhado ao buscar frete:", {
+            message: error.message,
+            code: error.code,
+            stack: error.stack
+        });
+        throw error; // Propaga o erro para ser tratado na função principal
     }
 }
 
 async function fetchCarregamentos(freteId) {
+    console.log('Tentando buscar carregamentos para o frete:', freteId);
+    
     try {
-        const carregamentosSnap = await getDocs(collection(db, `fretes/${freteId}/carregamentos`));
+        const carregamentosRef = collection(db, `fretes/${freteId}/carregamentos`);
+        console.log('Referência da coleção de carregamentos:', carregamentosRef);
+        
+        const carregamentosSnap = await getDocs(carregamentosRef);
         const carregamentos = [];
+        
         carregamentosSnap.forEach((doc) => {
-            carregamentos.push(doc.data());
+            carregamentos.push({
+                id: doc.id,
+                ...doc.data()
+            });
         });
+        
+        console.log(`${carregamentos.length} carregamentos encontrados`);
         return carregamentos;
     } catch (error) {
         console.error("Erro ao buscar carregamentos:", error);
@@ -43,7 +72,14 @@ async function fetchCarregamentos(freteId) {
 }
 
 function renderFreteDetails(frete) {
+    console.log('Renderizando detalhes do frete:', frete);
+    
     const detalhesContainer = document.getElementById("frete-details");
+    if (!detalhesContainer) {
+        console.error("Container de detalhes não encontrado!");
+        return;
+    }
+    
     detalhesContainer.innerHTML = "<h1>Detalhes do Frete</h1>";
 
     const freteFields = [
@@ -71,13 +107,35 @@ function renderFreteDetails(frete) {
             `;
         }
     });
+
+    //adicionar botão de voltar
+    detalhesContainer.innerHTML += `
+        <a href="../index.html">Voltar</a>
+    `;
+
+    //adicionar botão de editar
+    detalhesContainer.innerHTML += `
+        <a href="../editar_frete.html?id=${frete.id}">Editar</a>
+    `;
+
+    //adicionar botão de adicionar carregamento
+    detalhesContainer.innerHTML += `
+        <a href="../public/form_add_carregamento.html?id=${frete.id}">Adicionar Carregamento</a>
+    `;
 }
 
 function renderCarregamentos(carregamentos) {
+    console.log('Renderizando carregamentos:', carregamentos);
+    
     const carregamentosContainer = document.getElementById("carregamentos-list");
+    if (!carregamentosContainer) {
+        console.error("Container de carregamentos não encontrado!");
+        return;
+    }
+    
     carregamentosContainer.innerHTML = "<h2>Carregamentos</h2>";
 
-    if (carregamentos.length === 0) {
+    if (!Array.isArray(carregamentos) || carregamentos.length === 0) {
         carregamentosContainer.innerHTML += `
             <p>Não existem carregamentos para esse frete.</p>
         `;
@@ -109,24 +167,42 @@ function renderCarregamentos(carregamentos) {
 }
 
 async function loadDetails() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const freteId = urlParams.get("id");
+    console.log('Iniciando carregamento dos detalhes...');
+    
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const freteId = urlParams.get("id");
+        
+        console.log('ID do frete recuperado da URL:', freteId);
 
-    if (!freteId) {
-        alert("ID do frete não fornecido!");
-        return;
+        if (!freteId) {
+            throw new Error("ID do frete não fornecido na URL!");
+        }
+
+        // Tenta buscar os detalhes do frete
+        const frete = await fetchFreteDetails(freteId);
+        if (frete) {
+            renderFreteDetails(frete);
+            
+            // Só busca carregamentos se conseguiu carregar o frete
+            const carregamentos = await fetchCarregamentos(freteId);
+            renderCarregamentos(carregamentos);
+        }
+    } catch (error) {
+        console.error('Erro ao carregar detalhes:', error);
+        
+        // Mostra mensagem de erro mais específica para o usuário
+        const errorContainer = document.createElement('div');
+        errorContainer.style.color = 'red';
+        errorContainer.style.padding = '20px';
+        errorContainer.innerHTML = `
+            <h2>Erro ao carregar detalhes</h2>
+            <p>${error.message}</p>
+        `;
+        document.body.insertBefore(errorContainer, document.body.firstChild);
     }
-
-    const frete = await fetchFreteDetails(freteId);
-    if (frete) {
-        renderFreteDetails(frete);
-    } else {
-        alert("Erro ao carregar detalhes do frete.");
-        return;
-    }
-
-    const carregamentos = await fetchCarregamentos(freteId);
-    renderCarregamentos(carregamentos);
 }
 
+// Adiciona logging para garantir que o evento está sendo registrado
+console.log('Registrando evento DOMContentLoaded...');
 document.addEventListener("DOMContentLoaded", loadDetails);

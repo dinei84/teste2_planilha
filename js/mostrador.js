@@ -1,19 +1,26 @@
-// mostrador.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-import { firebaseConfig } from "../src/index.js"; // Certifique-se de que o caminho esteja correto
 
-// Inicialize o Firebase
+// Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyDcpggR7jf2BEPNLqRj1Iz368F0dDtD1-4",
+    authDomain: "planilha-8938f.firebaseapp.com",
+    projectId: "planilha-8938f",
+    storageBucket: "planilha-8938f.firebasestorage.app",
+    messagingSenderId: "211015132743",
+    appId: "1:211015132743:web:45f443dc9e65b72fe37362" 
+};
+
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const fretesCol = collection(db, "fretes");
 
-// Resto do código para renderização e manipulação dos fretes
-
-
 // Função para renderizar a lista de fretes
 async function renderFretes() {
+    console.log('Iniciando renderização dos fretes...');
     const fretesList = document.getElementById("fretes-list");
+    
     if (!fretesList) {
         console.error("Elemento 'fretes-list' não encontrado");
         return;
@@ -23,9 +30,12 @@ async function renderFretes() {
 
     try {
         const querySnapshot = await getDocs(fretesCol);
+        console.log(`Encontrados ${querySnapshot.size} fretes`);
+        
         querySnapshot.forEach((docSnapshot) => {
             const frete = docSnapshot.data();
             frete.id = docSnapshot.id;
+            console.log('Processando frete:', frete.id);
             fretesList.appendChild(createFreteElement(frete));
         });
     } catch (error) {
@@ -35,10 +45,18 @@ async function renderFretes() {
 }
 
 function createFreteElement(frete) {
-    // Criar o link ao redor de toda a div
+    console.log('Criando elemento para frete:', frete.id);
+    
     const freteLink = document.createElement("a");
-    freteLink.href = `../public/detalhes_frete.html?freteId=${frete.id}`; // Ajuste o caminho do arquivo HTML conforme necessário
-    freteLink.className = "frete-link"; // Classe para estilizar o link, se necessário
+    const href = `../public/detalhes_frete.html?id=${frete.id}`;
+    console.log('Link gerado:', href);
+    freteLink.href = href;
+    freteLink.className = "frete-link";
+
+    freteLink.addEventListener('click', (e) => {
+        console.log('Clique no frete:', frete);
+        console.log('URL de destino:', e.currentTarget.href);
+    });
 
     const freteItem = document.createElement("div");
     freteItem.className = "frete-item";
@@ -48,7 +66,6 @@ function createFreteElement(frete) {
 
     // Organização dos dados em 5 colunas
     const groups = [
-        // Coluna 1: Informações do Cliente
         {
             title: "Informações do Cliente",
             items: {
@@ -57,7 +74,6 @@ function createFreteElement(frete) {
                 "Recebedor": frete.recebedor || 'Não informado'
             }
         },
-        // Coluna 2: Localização
         {
             title: "Localização",
             items: {
@@ -66,7 +82,6 @@ function createFreteElement(frete) {
                 "Localização Atual": frete.localizacao || 'Não informada'
             }
         },
-        // Coluna 3: Produto
         {
             title: "Produto",
             items: {
@@ -75,7 +90,6 @@ function createFreteElement(frete) {
                 "Lote": frete.lote || 'Não informado'
             }
         },
-        // Coluna 4: Status
         {
             title: "Status",
             items: {
@@ -84,7 +98,6 @@ function createFreteElement(frete) {
                 "Operação": frete.operacao || '0%'
             }
         },
-        // Coluna 5: Valores
         {
             title: "Valores",
             items: {
@@ -95,18 +108,15 @@ function createFreteElement(frete) {
         }
     ];
 
-    // Criar grupos de informações
     groups.forEach(group => {
         const groupDiv = document.createElement("div");
         groupDiv.className = "frete-info-group";
         
-        // Adicionar título do grupo
         const titleP = document.createElement("p");
         titleP.className = "group-title";
         titleP.innerHTML = `<strong>${group.title}</strong>`;
         groupDiv.appendChild(titleP);
 
-        // Adicionar items do grupo
         Object.entries(group.items).forEach(([label, value]) => {
             const p = document.createElement("p");
             p.innerHTML = `<strong>${label}:</strong> ${value}`;
@@ -116,7 +126,6 @@ function createFreteElement(frete) {
         freteInfo.appendChild(groupDiv);
     });
 
-    // Botões de ação
     const freteActions = document.createElement("div");
     freteActions.className = "frete-actions";
 
@@ -124,7 +133,8 @@ function createFreteElement(frete) {
     updateButton.className = "button update-btn";
     updateButton.textContent = "Atualizar";
     updateButton.onclick = (e) => {
-        e.preventDefault(); // Impedir que o clique no botão siga o link
+        e.preventDefault();
+        e.stopPropagation();
         updateFrete(frete.id);
     };
 
@@ -133,6 +143,7 @@ function createFreteElement(frete) {
     deleteButton.textContent = "Excluir";
     deleteButton.onclick = (e) => {
         e.preventDefault();
+        e.stopPropagation();
         deleteFrete(frete.id);
     };
 
@@ -141,6 +152,7 @@ function createFreteElement(frete) {
     addLoadButton.textContent = "Adicionar Carregamento";
     addLoadButton.onclick = (e) => {
         e.preventDefault();
+        e.stopPropagation();
         addLoad(frete.id);
     };
 
@@ -150,16 +162,13 @@ function createFreteElement(frete) {
 
     freteItem.appendChild(freteInfo);
     freteItem.appendChild(freteActions);
-
-    // Adicionar o item ao link
     freteLink.appendChild(freteItem);
 
     return freteLink;
 }
 
-
-
 async function updateFrete(id) {
+    console.log('Iniciando atualização do frete:', id);
     const newDescricao = prompt("Digite a nova descrição do frete:");
     if (!newDescricao) return;
 
@@ -175,6 +184,7 @@ async function updateFrete(id) {
 }
 
 async function deleteFrete(id) {
+    console.log('Iniciando exclusão do frete:', id);
     if (!confirm("Tem certeza que deseja excluir este frete?")) return;
 
     try {
@@ -189,15 +199,29 @@ async function deleteFrete(id) {
 }
 
 function addLoad(id) {
+    console.log('Redirecionando para adicionar carregamento ao frete:', id);
     try {
-        const url = new URL('form_add_carregamento.html', window.location.href);
-        url.searchParams.set('freteId', id);
-        window.location.href = url.toString();
+        window.location.href = `form_add_carregamento.html?id=${id}`;
     } catch (error) {
         console.error("Erro ao redirecionar:", error);
         alert("Erro ao redirecionar para o formulário de carregamento");
     }
 }
 
-// Inicialização
-document.addEventListener('DOMContentLoaded', renderFretes);
+// Adiciona um listener para a barra de pesquisa
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Página carregada, inicializando...');
+    
+    const searchInput = document.getElementById('pesquisar');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            // Implementar lógica de pesquisa aqui
+            console.log('Termo de pesquisa:', e.target.value);
+        });
+    }
+
+    renderFretes();
+});
+
+// Exportar funções necessárias
+export { renderFretes, updateFrete, deleteFrete, addLoad };
