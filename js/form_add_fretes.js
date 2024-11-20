@@ -1,8 +1,5 @@
-//form_add_fretes.js
-
 import { collection, addDoc } from "../src/index.js"; 
 import { db } from '../src/index.js';
-
 
 const fretesCol = collection(db, "fretes");
 
@@ -57,18 +54,26 @@ function getFormData() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const btnAdd = document.getElementById('adicionar_fretes');
-    btnAdd.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const freteData = getFormData();
-        
-        const id = await createFrete(freteData);
-        if (id) {
-            alert('Frete criado com sucesso!');
-            // Opcional: limpar o formulário ou redirecionar
-            window.location.href = '../public/mostrador.html';
-        } else {
-            alert('Erro ao criar frete. Tente novamente.');
-        }
-    });
+    const freteForm = document.getElementById('freteForm');
+    const btnAdicionar = document.querySelector('#freteForm button[type="button"]:not(#voltar)');
+    
+    if (btnAdicionar) {
+        btnAdicionar.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const freteData = getFormData();
+            
+            const id = await createFrete(freteData);
+            if (id) {
+                alert('Frete criado com sucesso!');
+                // Corrigindo o caminho do redirecionamento para apontar para o index.html na raiz
+                window.location.href = '../../index.html';   
+                // Alternativa usando caminho relativo caso o anterior não funcione:
+                // window.location.href = '../../index.html';
+            } else {
+                alert('Erro ao criar frete. Tente novamente.');
+            }
+        });
+    } else {
+        console.error('Botão Adicionar não encontrado');
+    }
 });
