@@ -1,5 +1,6 @@
-// formHandler.js
-import { addCarregamento } from "./index.js"; // Ajuste o caminho de acordo com a estrutura do seu projeto
+// form_add_carregamentos.js
+
+import { addCarregamento } from "./index.js"; // Ajuste o caminho conforme necessário
 
 // Seleciona os elementos do formulário
 const form = document.getElementById("freteForm");
@@ -25,7 +26,10 @@ function getFormData() {
 
 // Função para validar os dados do formulário
 function validateFormData(data) {
-    // Adicione suas validações aqui
+    // Exemplo de validações simples
+    if (!data.data || !data.placa || !data.motorista || isNaN(data.peso) || isNaN(data.frete_motorista)) {
+        return false;
+    }
     return true; // Retorna true se os dados forem válidos
 }
 
@@ -47,6 +51,8 @@ async function handleSubmit(freteId) {
             return;
         }
 
+        adicionarButton.disabled = true; // Desabilita o botão durante o envio
+
         // Envia os dados para a coleção "carregamentos"
         const carregamentoId = await addCarregamento(freteId, carregamentoData);
         
@@ -59,14 +65,23 @@ async function handleSubmit(freteId) {
     } catch (error) {
         console.error("Erro ao processar o carregamento:", error);
         alert("Erro ao adicionar carregamento. Verifique os dados e tente novamente.");
+    } finally {
+        adicionarButton.disabled = false; // Reabilita o botão após a operação
     }
 }
 
 // Adiciona evento de clique ao botão "Adicionar"
-adicionarButton.addEventListener("click", () => {
-    // Substitua "ID_DO_FRETE_AQUI" pelo ID real do frete
-    const freteId = "7ohnf7sPnvSTXi8P98gQ"; 
-    handleSubmit(freteId);
+adicionarButton.addEventListener("click", async () => {
+    // Recuperar o freteId da URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const freteId = urlParams.get("id");
+
+    if (!freteId) {
+        alert("Erro: ID do frete não encontrado na URL!");
+        return;
+    }
+
+    await handleSubmit(freteId);
 });
 
 export { handleSubmit, getFormData };

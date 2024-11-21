@@ -1,3 +1,5 @@
+//detalhes.js
+
 import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 
@@ -16,6 +18,10 @@ const db = getFirestore(app);
 
 async function fetchFreteDetails(freteId) {
     console.log('Tentando buscar frete com ID:', freteId);
+    // Buscar o nome do frete e exibir no HTML
+    const freteNomeElement = document.getElementById("frete-nome");
+    // ... (código para buscar o nome do frete no Firestore usando o freteId)
+    freteNomeElement.textContent = nomeDoFrete;
     
     try {
         // Verifica se o ID é válido
