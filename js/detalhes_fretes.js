@@ -18,10 +18,6 @@ const db = getFirestore(app);
 
 async function fetchFreteDetails(freteId) {
     console.log('Tentando buscar frete com ID:', freteId);
-    // Buscar o nome do frete e exibir no HTML
-    const freteNomeElement = document.getElementById("frete-nome");
-    // ... (código para buscar o nome do frete no Firestore usando o freteId)
-    freteNomeElement.textContent = nomeDoFrete;
     
     try {
         // Verifica se o ID é válido
@@ -41,6 +37,18 @@ async function fetchFreteDetails(freteId) {
         
         const freteData = freteDoc.data();
         console.log('Dados do frete recuperados:', freteData);
+
+        // Buscar o nome do frete e exibir no HTML
+        const freteNomeElement = document.getElementById("frete-nome");
+        if (freteNomeElement) {
+            // Use a propriedade que contém o nome do frete, adjust as needed
+            const nomeDoFrete = freteData.cliente || 'Frete sem nome';
+            freteNomeElement.textContent = nomeDoFrete;
+        }
+
+        // Add the ID to the returned data for later use
+        freteData.id = freteId;
+
         return freteData;
     } catch (error) {
         console.error("Erro detalhado ao buscar frete:", {
