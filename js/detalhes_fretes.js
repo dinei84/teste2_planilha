@@ -149,7 +149,7 @@ function renderFreteDetails(frete) {
 }
 
 
-function renderCarregamentos(carregamentos) {
+function renderCarregamentos(carregamentos, freteId) {
     console.log('Renderizando carregamentos:', carregamentos);
     
     const carregamentosContainer = document.getElementById("carregamentos-list");
@@ -166,10 +166,45 @@ function renderCarregamentos(carregamentos) {
         `;
         return;
     }
+    async function editCarregamento(freteId, carregamentoId) {
+        console.log('Editando carregamento:', carregamentoId, 'do frete:', freteId);
+        // Redirecionar para página de edição de carregamento
+        window.location.href = `../public/form_add_carregamento.html?freteId=${freteId}&carregamentoId=${carregamentoId}`;
+    }
+    
+    async function deleteCarregamento(freteId, carregamentoId) {
+        console.log('Deletando carregamento:', carregamentoId, 'do frete:', freteId);
+        
+        try {
+            // Adicione a lógica para deletar o carregamento do Firestore
+            const carregamentoRef = doc(db, `fretes/${freteId}/carregamentos`, carregamentoId);
+            await deleteDoc(carregamentoRef);
+            
+            alert('Carregamento excluído com sucesso!');
+            
+            // Recarregar os carregamentos
+            const carregamentos = await fetchCarregamentos(freteId);
+            renderCarregamentos(carregamentos, freteId);
+        } catch (error) {
+            console.error('Erro ao deletar carregamento:', error);
+            alert('Erro ao excluir carregamento. Tente novamente.');
+        }
+    }
+    
 
     carregamentos.forEach((carregamento, index) => {
         const carregamentoDiv = document.createElement("div");
         carregamentoDiv.className = "carregamento-item";
+
+        const editButton = document.createElement("button");
+        editButton.textContent = "Editar";
+        editButton.className = "edit-btn";
+        editButton.addEventListener("click", () => editCarregamento(freteId, carregamento.id));
+
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Deletar";
+        deleteButton.className = "delete-btn";
+        deleteButton.addEventListener("click", () => deleteCarregamento(freteId, carregamento.id));
 
         carregamentoDiv.innerHTML = `
             <p><strong>Carregamento ${index + 1}</strong></p>
@@ -177,19 +212,17 @@ function renderCarregamentos(carregamentos) {
             <p><strong>Placa:</strong> ${carregamento.placa || "Não informado"}</p>
             <p><strong>Motorista:</strong> ${carregamento.motorista || "Não informado"}</p>
             <p><strong>Tipo de Veículo:</strong> ${carregamento.veiculo || "Não informado"}</p>
-            <p><strong>Peso:</strong> ${carregamento.peso || "0"} kg</p>
-            <p><strong>Frete Motorista:</strong> R$ ${parseFloat(carregamento.frete_motorista || 0).toFixed(2)}</p>
-            <p><strong>Emissor:</strong> ${carregamento.emissor || "Não informado"}</p>
-            <p><strong>Data Manifesto:</strong> ${carregamento.data_manifesto || "Não informado"}</p>
-            <p><strong>CTE:</strong> ${carregamento.cte || "Não informado"}</p>
-            <p><strong>Data Entrega:</strong> ${carregamento.data_entrega || "Não informado"}</p>
-            <p><strong>NFe:</strong> ${carregamento.nfe || "Não informado"}</p>
-            <p><strong>Observação:</strong> ${carregamento.obs || "Nenhuma"}</p>
+            <div class="crud-buttons"></div>
         `;
+
+        const crudButtons = carregamentoDiv.querySelector(".crud-buttons");
+        crudButtons.appendChild(editButton);
+        crudButtons.appendChild(deleteButton);
 
         carregamentosContainer.appendChild(carregamentoDiv);
     });
 }
+
 
 
 
@@ -233,3 +266,7 @@ async function loadDetails() {
 // Adiciona logging para garantir que o evento está sendo registrado
 console.log('Registrando evento DOMContentLoaded...');
 document.addEventListener("DOMContentLoaded", loadDetails);
+
+// No final do arquivo detalhes.js
+window.editCarregamento = fetchCarregamentos;
+window.deleteCarregamento = deleteCarregamento;

@@ -57,6 +57,7 @@ async function handleSubmit(freteId) {
         const carregamentoId = await addCarregamento(freteId, carregamentoData);
         
         if (carregamentoId) {
+            window.location.href = `../public/detalhes_frete.html?id=${freteId}`;
             alert("Carregamento adicionado com sucesso!");
             form.reset(); // Limpa o formulário após o envio bem-sucedido
         } else {
