@@ -46,7 +46,7 @@ async function fetchFreteDetails(freteId) {
             freteNomeElement.textContent = nomeDoFrete;
         }
 
-        // Add the ID to the returned data for later use
+        // Adiciona o ID aos dados retornados para uso posterior
         freteData.id = freteId;
 
         return freteData;
@@ -93,8 +93,10 @@ function renderFreteDetails(frete) {
         console.error("Container de detalhes não encontrado!");
         return;
     }
-    
-    detalhesContainer.innerHTML = "<h1>Detalhes do Frete</h1>";
+    const titleContainer = document.createElement("div");
+    titleContainer.style.textAlign = "center";
+    titleContainer.appendChild(document.createElement("h1")).textContent = "Detalhes do Frete";
+    detalhesContainer.appendChild(titleContainer);
 
     const freteFields = [
         { label: "Cliente", value: frete.cliente },
@@ -116,27 +118,36 @@ function renderFreteDetails(frete) {
 
     freteFields.forEach((field) => {
         if (field.value) {
-            detalhesContainer.innerHTML += `
-                <p><strong>${field.label}:</strong> ${field.value}</p>
-            `;
+            const fieldElement = document.createElement("p");
+            fieldElement.innerHTML = `<strong>${field.label}:</strong> ${field.value}`;
+            detalhesContainer.appendChild(fieldElement);
         }
     });
 
-    //adicionar botão de voltar
-    detalhesContainer.innerHTML += `
-        <a href="../index.html">Voltar</a>
-    `;
+    // Adicionar botão de voltar
+    const voltarButton = document.createElement("a");
+    voltarButton.href = "../index.html";
+    voltarButton.textContent = "Planilha";
+    voltarButton.className = "btn btn-primary";  
+    detalhesContainer.appendChild(voltarButton);
 
-    //adicionar botão de editar
-    detalhesContainer.innerHTML += `
-        <a href="../editar_frete.html?id=${frete.id}">Editar</a>
-    `;
+    // Adicionar botão de editar
+    const editarButton = document.createElement("a");
+    editarButton.href = `../editar_frete.html?id=${frete.id}`;
+    editarButton.textContent = "Editar Frete";
+    editarButton.className = "btn btn-secondary";
+    detalhesContainer.appendChild(editarButton);
 
-    //adicionar botão de adicionar carregamento
-    detalhesContainer.innerHTML += `
-        <a href="../public/form_add_carregamento.html?id=${frete.id}">Adicionar Carregamento</a>
-    `;
+
+    // Adicionar botão de adicionar carregamento
+    const addCarregamentoButton = document.createElement("a");
+    addCarregamentoButton.href = `../public/form_add_carregamento.html?id=${frete.id}`;
+    addCarregamentoButton.textContent = "Adicionar Carregamento";
+    addCarregamentoButton.className = "btn btn-success";
+    detalhesContainer.appendChild(addCarregamentoButton);
+    
 }
+
 
 function renderCarregamentos(carregamentos) {
     console.log('Renderizando carregamentos:', carregamentos);
@@ -146,7 +157,7 @@ function renderCarregamentos(carregamentos) {
         console.error("Container de carregamentos não encontrado!");
         return;
     }
-    
+
     carregamentosContainer.innerHTML = "<h2>Carregamentos</h2>";
 
     if (!Array.isArray(carregamentos) || carregamentos.length === 0) {
@@ -179,6 +190,8 @@ function renderCarregamentos(carregamentos) {
         carregamentosContainer.appendChild(carregamentoDiv);
     });
 }
+
+
 
 async function loadDetails() {
     console.log('Iniciando carregamento dos detalhes...');
