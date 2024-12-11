@@ -166,11 +166,7 @@ function renderCarregamentos(carregamentos, freteId) {
         `;
         return;
     }
-    async function editCarregamento(freteId, carregamentoId) {
-        console.log('Editando carregamento:', carregamentoId, 'do frete:', freteId);
-        // Redirecionar para página de edição de carregamento
-        window.location.href = `../public/form_add_carregamento.html?freteId=${freteId}&carregamentoId=${carregamentoId}`;
-    }
+    
     
     async function deleteCarregamento(freteId, carregamentoId) {
         console.log('Deletando carregamento:', carregamentoId, 'do frete:', freteId);
@@ -196,11 +192,6 @@ function renderCarregamentos(carregamentos, freteId) {
         const carregamentoDiv = document.createElement("div");
         carregamentoDiv.className = "carregamento-item";
 
-        const editButton = document.createElement("button");
-        editButton.textContent = "Editar";
-        editButton.className = "edit-btn";
-        editButton.addEventListener("click", () => editCarregamento(freteId, carregamento.id));
-
         const deleteButton = document.createElement("button");
         deleteButton.textContent = "Deletar";
         deleteButton.className = "delete-btn";
@@ -214,6 +205,13 @@ function renderCarregamentos(carregamentos, freteId) {
             <p><strong>Tipo de Veículo:</strong> ${carregamento.veiculo || "Não informado"}</p>
             <div class="crud-buttons"></div>
         `;
+        const editButton = document.createElement("button");
+        editButton.textContent = "Editar";
+        editButton.className = "edit-btn";
+        editButton.addEventListener("click", () => {
+            console.log("Botão de edição clicado", { freteId, carregamentoId: carregamento.id });
+            editCarregamento(freteId, carregamento.id);
+        });
 
         const crudButtons = carregamentoDiv.querySelector(".crud-buttons");
         crudButtons.appendChild(editButton);
@@ -223,6 +221,11 @@ function renderCarregamentos(carregamentos, freteId) {
     });
 }
 
+async function editCarregamento(freteId, carregamentoId) {
+    console.log('Editando carregamento:', carregamentoId, 'do frete:', freteId);
+    // Redirecionar para página de edição de carregamento
+    window.location.href = `../public/form_add_carregamento.html?freteId=${freteId}&carregamentoId=${carregamentoId}`;
+}
 
 
 
@@ -268,5 +271,5 @@ console.log('Registrando evento DOMContentLoaded...');
 document.addEventListener("DOMContentLoaded", loadDetails);
 
 // No final do arquivo detalhes.js
-window.editCarregamento = fetchCarregamentos;
+window.editCarregamento = editCarregamento;
 window.deleteCarregamento = deleteCarregamento;
